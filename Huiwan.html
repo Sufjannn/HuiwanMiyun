@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>惠玩密云 · 青年玩法 · 集章之旅</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 50%, #f3e8ff 100%);
+      font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #f8fafc;
+      border-radius: 42px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.5);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 30px;
+      background: #0f172a;
+      border-radius: 20px;
+      z-index: 100;
+    }
+
+    .status-bar {
+      padding: 18px 24px 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 90px;
+      scroll-behavior: smooth;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .topbar {
+      padding: 8px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #10b981, #059669);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      color: #1e293b;
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+
+    .brand p {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: none;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      padding: 18px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:active { transform: scale(0.98); }
+
+    .section-title {
+      margin: 18px 4px 12px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .section-title h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .section-title span {
+      font-size: 13px;
+      color: #10b981;
+    }
+
+    /* 首页主题横向大图展示 */
+    .theme-hero-shell {
+      margin: 0 -16px 10px;
+    }
+
+    .theme-hero-list {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 6px calc(50% - 168px) 10px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+    }
+
+    .theme-hero-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .theme-hero-item {
+      position: relative;
+      flex: 0 0 336px;
+      height: 520px;
+      border-radius: 36px;
+      overflow: hidden;
+      scroll-snap-align: center;
+      box-shadow: 0 22px 42px rgba(15, 23, 42, 0.16);
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.18);
+      transform: scale(0.94);
+      opacity: 0.74;
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease, box-shadow 0.28s ease;
+    }
+
+    .theme-hero-item.active-card {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 28px 56px rgba(15, 23, 42, 0.24);
+    }
+
+    .theme-hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.18);
+      filter: blur(24px);
+      opacity: 0.92;
+    }
+
+    .theme-hero-mask {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(8,12,22,0.04) 0%, rgba(8,12,22,0.14) 35%, rgba(8,12,22,0.36) 100%),
+        radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 34%);
+    }
+
+    .theme-hero-inner {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      color: white;
+      text-align: center;
+    }
+
+    .theme-poster-sheet {
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.24);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.22);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .theme-poster-visual {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      overflow: hidden;
+    }
+
+    .theme-poster-visual::after {
+      content: '';
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 8px;
+      bottom: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 24%, rgba(8,12,22,0.10) 100%);
+      pointer-events: none;
+      border-radius: 22px;
+    }
+
+    .theme-poster-photo {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      transform: none;
+      image-rendering: -webkit-optimize-contrast;
+      backface-visibility: hidden;
+      z-index: 1;
+    }
+
+    .theme-poster-gradient {
+      display: none;
+    }
+
+    .theme-poster-panel {
+      display: none;
+    }
+
+    .theme-poster-panel::before {
+      display: none;
+    }
+
+    .theme-poster-tag {
+      font-size: 10px;
+      color: #d17d36;
+      letter-spacing: 1.5px;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .theme-poster-title {
+      font-size: 17px;
+      line-height: 1.3;
+      color: #b46024;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .theme-poster-desc {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #665546;
+    }
+
+    .theme-hero-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .theme-hero-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.18);
+      transition: all 0.25s ease;
+    }
+
+    .theme-hero-dot.active {
+      width: 24px;
+      background: #0f172a;
+    }
+
+    /* 集章进度 */
+    .stamp-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 12px;
+      background: #f1f5f9;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #34d399, #10b981);
+      border-radius: 20px;
+      transition: width 0.5s ease;
+    }
+
+    .stamp-icons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .stamp {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    .stamp img { width: 64px; height: 64px; object-fit: contain; }
+    .stamp.on {
+      background: linear-gradient(145deg, #34d399, #10b981);
+      box-shadow: 0 8px 14px rgba(16, 185, 129, 0.3);
+      transform: scale(1.02);
+    }
+
+    /* 集章页面专属样式 - 徽章墙 */
+    .badge-wall {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      margin: 20px 0;
+      background: transparent;
+      padding: 0;
+      border: none;
+      width: 100%;
+    }
+    .badge-item {
+      text-align: center;
+      transition: all 0.2s;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      flex: 1 1 calc(50% - 2px);
+      max-width: calc(50% - 2px);
+      overflow: hidden;
+    }
+    .badge-item.locked {
+      opacity: 0.6;
+      filter: grayscale(0.3);
+    }
+    .badge-icon {
+      margin-bottom: 0;
+      background: transparent;
+      padding: 0;
+      border: none;
+    }
+    .badge-icon img {
+      width: 180px;
+      height: 90px;
+      object-fit: contain;
+      background: transparent;
+      border-radius: 0;
+      display: block;
+    }
+    .badge-item.unlocked .badge-icon img {
+      transition: 0.2s;
+    }
+    .badge-name {
+      font-weight: 700;
+      margin: 6px 0 4px;
+      color: #0f172a;
+    }
+    .badge-location {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .menu-item {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:hover { background: #f8fafc; }
+    .menu-item span { font-size: 20px; }
+    .booking-card {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .booking-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .booking-card-status {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .booking-card-status.confirmed { background: #d1fae5; color: #059669; }
+    .booking-card-status.pending { background: #fef3c7; color: #d97706; }
+    .booking-card-status.cancelled { background: #fee2e2; color: #dc2626; }
+    .booking-card-route {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .booking-card-info { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+    .booking-card-actions { margin-top: 12px; display: flex; gap: 8px; }
+    .booking-card-actions button {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn-cancel { background: #fee2e2; color: #dc2626; }
+    .btn-modify { background: #e0f2fe; color: #0284c7; }
+    .scan-badge-btn {
+      background: #f1f5f9;
+      border: none;
+      padding: 8px 0;
+      width: 100%;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #059669;
+      margin-top: 8px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .scan-badge-btn:active { transform: scale(0.96); background: #e2e8f0; }
+    .badge-item.unlocked .scan-badge-btn {
+      background: #ecfdf5;
+      color: #10b981;
+      border: 1px solid #a7f3d0;
+    }
+    .badge-item.unlocked .scan-badge-btn:active { background: #d1fae5; }
+
+    /* 弹出徽章图片样式 */
+    .stamp-popup-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(12px);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+    }
+    .stamp-popup-overlay.show {
+      visibility: visible;
+      opacity: 1;
+    }
+    .stamp-popup-card {
+      width: 280px;
+      background: white;
+      border-radius: 48px;
+      padding: 32px 20px;
+      text-align: center;
+      animation: bounce 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+      box-shadow: 0 30px 40px rgba(0,0,0,0.3);
+    }
+    @keyframes bounce {
+      0% { transform: scale(0.8); opacity: 0; }
+      80% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .stamp-popup-card img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 16px;
+    }
+    .stamp-popup-card h3 {
+      font-size: 24px;
+      color: #059669;
+      margin: 12px 0 8px;
+    }
+    .stamp-popup-card p {
+      color: #475569;
+    }
+
+    .nav-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 84px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(20px);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 10px 6px 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-item {
+      border: none;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-item i {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #94a3b8;
+      transition: all 0.3s ease;
+    }
+
+    .nav-item.active i {
+      background: linear-gradient(145deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+      transform: translateY(-4px);
+    }
+
+    .nav-item.active {
+      color: #059669;
+    }
+
+    .popup {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 120px;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      padding: 18px;
+      border-radius: 28px;
+      color: white;
+      z-index: 200;
+      transform: translateY(30px);
+      opacity: 0;
+      transition: 0.3s;
+      pointer-events: none;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .popup.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .popup-close {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 14px;
+      color: #0f172a;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #10b981;
+      background: #ffffff;
+    }
+
+    .price-tag {
+      font-size: 18px;
+      font-weight: 700;
+      color: #059669;
+    }
+
+    .post-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .flex {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mt-2 { margin-top: 12px; }
+    .mb-2 { margin-bottom: 12px; }
+
+    .map-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      border-radius: 16px;
+    }
+    .map-scroll::-webkit-scrollbar { display: none; }
+    .map-image-container {
+      display: inline-block;
+      position: relative;
+    }
+    .map-image {
+      height: 400px;
+      width: auto;
+      display: block;
+      border-radius: 16px;
+    }
+    .map-marker {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: rgba(16, 185, 129, 0.9);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .map-marker:active {
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 150;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card {
+      width: 340px;
+      background: white;
+      border-radius: 28px;
+      padding: 24px;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+    }
+
+    #cameraModal .modal-card {
+      padding: 0;
+      overflow: hidden;
+    }
+    #cameraVideo {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      background: #000;
+    }
+    .camera-controls {
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .shuttle-card.highlight {
+      background: #ecfdf5;
+      border-left: 6px solid #10b981;
+      transform: scale(1.01);
+      transition: all 0.2s;
+    }
+    .btn-green {
+      background: linear-gradient(145deg, #10b981, #059669);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-green:active { transform: scale(0.96); }
+    .activity-card-inline {
+      background: #fefce8;
+      margin-bottom: 12px;
+      border-left: 5px solid #facc15;
+    }
+  
+
+    .app.entering .topbar,
+    .app.entering .content,
+    .app.entering .nav-bar {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .startup-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, rgba(5,10,20,0.18) 0%, rgba(5,10,20,0.42) 100%);
+      backdrop-filter: blur(14px);
+      opacity: 1;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+
+    .startup-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .startup-head {
+      padding: 54px 22px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      position: relative;
+      z-index: 2;
+    }
+
+    .startup-head-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .startup-head-sub {
+      font-size: 12px;
+      opacity: 0.82;
+      margin-top: 6px;
+    }
+
+    .startup-skip {
+      border: none;
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+
+    .startup-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .startup-slider {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0 calc(50% - 166px);
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      width: 100%;
+    }
+
+    .startup-slider::-webkit-scrollbar { display:none; }
+
+    .startup-card {
+      position: relative;
+      flex: 0 0 332px;
+      height: 556px;
+      border-radius: 34px;
+      overflow: hidden;
+      scroll-snap-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+      transform: scale(0.92);
+      opacity: 0.66;
+      transition: transform 0.32s ease, opacity 0.32s ease;
+      background: #0f172a;
+    }
+
+    .startup-card.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .startup-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: var(--bg);
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.16);
+      filter: blur(22px);
+      opacity: 0.9;
+    }
+
+    .startup-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(8,12,22,0.12) 40%, rgba(8,12,22,0.44) 100%);
+    }
+
+    .startup-card-inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .startup-poster {
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .startup-poster-photo {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .startup-poster-info {
+      display: none;
+    }
+
+    .startup-poster-info::before {
+      display: none;
+    }
+
+    .startup-tag {
+      font-size: 11px;
+      color: #d17d36;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+      margin-bottom: 6px;
+    }
+
+    .startup-title {
+      display: none;
+    }
+
+    .startup-name {
+      font-size: 16px;
+      color: #b46024;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .startup-desc {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #665546;
+    }
+
+    .startup-footer {
+      padding: 10px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .startup-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .startup-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.35);
+      transition: all 0.25s ease;
+    }
+
+    .startup-dot.active {
+      width: 26px;
+      background: #fff;
+    }
+
+    .startup-enter {
+      border: none;
+      background: linear-gradient(145deg, #ffffff, #f3f4f6);
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 15px 18px;
+      border-radius: 18px;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+    }
+
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="app entering" id="appRoot">
+    <div class="startup-overlay" id="startupOverlay">
+      <div class="startup-head">
+        <div>
+          <div class="startup-head-title">密云四大主题</div>
+          <div class="startup-head-sub">先看主题海报，再进入下方功能导航</div>
+        </div>
+        <button class="startup-skip" onclick="finishStartupIntro()">跳过</button>
+      </div>
+      <div class="startup-body">
+        <div class="startup-slider" id="startupSlider"></div>
+      </div>
+      <div class="startup-footer">
+        <div class="startup-dots" id="startupDots"></div>
+        <button class="startup-enter" id="startupEnterBtn" onclick="finishStartupIntro()">进入玩法</button>
+      </div>
+    </div>
+
+
+    <div class="topbar">
+      <div class="brand"><div class="logo">密</div><div><h1>青年玩法</h1><p>惠玩密云·友好文旅体验</p></div></div>
+      <button class="icon-btn" id="menuBtn" onclick="toggleMenu()">☰</button>
+    </div>
+    <div class="content" id="contentArea">
+      <!-- 首页 -->
+      <div class="page active" id="homePage">
+        <div class="section-title"><h3>四大主题</h3><span>左右滑动浏览</span></div>
+        <div class="theme-hero-shell">
+          <div class="theme-hero-list" id="themeHeroList"></div>
+          <div class="theme-hero-dots" id="themeHeroDots"></div>
+        </div>
+        <div class="card" onclick="if(!getUserInfo()){showToast('提示','请先登录');}else{navigateTo('stampPage');}">
+          <div class="flex" style="justify-content:space-between;"><div><strong style="font-size:16px;">🏅 我的集章进度</strong></div><span style="color:#059669; font-weight:600;" id="stampCountDisplay">2/4</span></div>
+          <div class="stamp-progress mt-2"><div class="progress-bar"><div class="progress-fill" id="miniProgressFill" style="width:50%"></div></div><div class="stamp-icons" id="stampIcons"></div></div>
+          <div style="font-size:12px; color:#10b981; margin-top:8px; font-weight:600;">点击查看详情 →</div>
+        </div>
+        <!-- 最新活动区块（替代原活动页） -->
+        <div class="section-title"><h3>🔥 最新活动</h3><span>青年专属</span></div>
+        <div class="card activity-card-inline" onclick="goToActivityDetail('concert')"><strong>🎤 周末青年音乐会</strong><p style="font-size:13px; color:#64748b;">本周六 15:00 · 露天音乐驿站</p></div>
+        <div class="card activity-card-inline" onclick="goToActivityDetail('photo')"><strong>📸 青年摄影打卡点</strong><p style="font-size:13px; color:#64748b;">官方推荐机位，拍出大片感</p></div>
+        <div class="card activity-card-inline" style="background:#fff7ed;" onclick="goToActivityDetail('notice')"><strong>⚠️ 通知：因天气，古北水镇夜游取消</strong></div>
+        <button class="btn-green" style="margin-top:4px;" onclick="navigateTo('stampPage'); setTimeout(() => openGlobalCameraForStamp(), 100);">📷 扫码集章</button>
+      </div>
+      
+      <!-- 接驳车页 -->
+      <div class="page" id="shuttlePage"><div class="section-title"><h3>🚍 旅游接驳专线</h3><span>高铁衔接·准时舒适</span></div><div id="shuttleLinesContainer"></div><div class="card" style="background:#f0fdf4;"><strong>📌 运营说明</strong><ul style="font-size:13px; margin-top:8px; padding-left:20px;"><li>统一标识“密云旅游专线”，支持实时查询</li><li>日常19座中巴，周末/节假日升级33座大巴</li><li>7座商务车应急调度，提升体验</li></ul></div></div>
+      
+      <!-- 预约表单页 -->
+      <div class="page" id="bookingFormPage"><div class="section-title"><h3>填写预约信息</h3><span onclick="backToShuttle()" style="cursor:pointer; background:#f1f5f9; padding:4px 12px; border-radius:12px;">← 返回</span></div><div class="card"><div class="form-group"><label>出发地</label><input type="text" id="departure" readonly></div><div class="form-group"><label>目的地</label><input type="text" id="destination" readonly></div><div class="form-group"><label>乘车人数</label><input type="number" min="1" value="1" id="passengerCount"></div><div class="form-group"><label>手机号码</label><input type="tel" placeholder="请输入手机号" id="phoneNumber"></div><div class="form-group"><label>乘车日期</label><input type="date" id="travelDate"></div><div class="form-group"><label>乘车时间</label><select id="travelTime"></select></div><div class="form-group"><label>行程类型</label><div class="flex" style="gap: 16px;"><label class="flex"><input type="radio" name="tripType" value="去程" checked onchange="updatePrice()"> 去程</label><label class="flex"><input type="radio" name="tripType" value="回程" onchange="updatePrice()"> 回程</label><label class="flex"><input type="radio" name="tripType" value="往返" onchange="updatePrice()"> 往返</label></div></div><div class="form-group"><label>总价</label><div class="price-tag" id="totalPriceDisplay">¥0</div></div><button class="btn-green" onclick="submitBooking()">提交预约</button></div></div>
+      
+      <!-- 活动详情页 (保留) -->
+      <div class="page" id="activityDetailPage"><div class="section-title"><h3 id="activityDetailTitle">活动详情</h3><span onclick="backToHomeFromActivity()" style="cursor:pointer; background:#f1f5f9; padding:4px 12px; border-radius:12px;">← 返回首页</span></div><div class="card" id="activityDetailContent"></div></div>
+      
+      <!-- 论坛页 -->
+      <div class="page" id="forumPage"><div class="section-title"><h3>青年论坛</h3><span>分享你的密云故事</span></div><div id="postList"></div><button style="position:sticky; bottom:20px; float:right; width:56px;height:56px;border-radius:28px;background: linear-gradient(145deg, #10b981, #059669);color:white;font-size:30px;border:none;box-shadow:0 10px 20px rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;" onclick="openNewPostModal()">+</button></div>
+      <div class="page" id="postDetailPage"><div class="section-title"><span onclick="backToForum()" style="cursor:pointer; background:#f1f5f9; padding:4px 12px; border-radius:12px;">← 返回</span><h3>帖子详情</h3><span></span></div><div id="postDetailContent"></div></div>
+      
+      <!-- 地图页 -->
+      <div class="page" id="mapPage"><div class="section-title"><h3>景区地图</h3><span>左右滑动·点击标记</span></div><div class="card" style="padding:8px;"><div class="map-scroll" id="mapScroll"><div class="map-image-container"><img src="img/map.png" alt="密云景区地图" class="map-image" id="mapImage"><div class="map-marker" style="left:15.63%; top:57.5%;" onclick="showToast('云蒙山', '集山水风光、康养休闲、户外运动、大自然游学于一体，拥有2.5公里长的索道，是观赏密云水库和长城遗址的绝佳位置。\n \t 半山520爱之谷的湖畔帐篷餐厅、心锁桥、高山叠瀑、松塔乐园、3D彩绘等充满浪漫色彩。\n \t 山脊森林中的丛林穿越、1314音乐栈道等体验项目充满惊奇刺激，是罕有的可以观山观水观长城，赏云赏瀑赏石松的京华胜境。')"></div><div class="map-marker" style="left:37.5%; top:80.0%;" onclick="showToast('日光山谷', '秉承日光旅文的核心理念，创造用心、有爱的家庭度假产品，让每一个家庭成员拥有更多陪伴和快乐为品牌使命，倡导在自然中陪伴，在陪伴中快乐的生活方式，为消费者提供高品质的度假休闲场景。')"></div><div class="map-marker" style="left:38.75%; top:67.5%;" onclick="showToast('邑仕庄园', '背靠白龙山，前有凤凰岭，面向密云水库，与绿山净水完美组合，构成了「清山为体，碧水为魂」的独特景观,保留了山体的自然风貌。\n \t 庄园中主体建筑为十八世纪欧式城堡风格，并融入中国传统文化，中西文化融为一体，并已经推出餐饮、住宿、采摘、亲子、会议、拓展等服务。')"></div><div class="map-marker" style="left:17.5%; top:72.5%;" onclick="showToast('云龙涧', '是一条布满深潭、瀑布、奇峰、怪石、林海、长城的大峡谷。大小景观数百处，一步见三景，三景只一步。\n \t 景区由「深涧透云峡」「登高好汉坡」「幽林十八盘」「怀古览胜景」「奥运中国印摩崖石刻」，五大主题风景走廊构成，随高度呈变化，深邃莫测，到达山顶您可以欣赏到密云水库的全景。')"></div><div class="map-marker" style="left:71.25%; top:27.5%;" onclick="showToast('古北水镇', '距首都机场仅120公里\n \t 坐拥鸳鸯湖水库、背靠中国最美最险的司马台长城，是长城脚下独具北方风情的度假式小镇，也是集观光游览、休闲度假、商务会展、创意文化等旅游业态为一体，服务与设施一流、参与性和体验性极高的综合性特色休闲国际旅游度假目的地。')"></div><div class="map-marker" style="left:65.6%; top:17.5%;" onclick="showToast('司马台长城', '唯一一段保留明长城原貌的古长城，国内目前唯一开放夜游的长城，以其险、密、齐、巧、全五大特点著称于世\n \t「中国长城是世界之最，司马台长城堪称中国长城之最」。')"></div></div></div></div><p style="text-align:center; color:#64748b; font-size:13px; margin-top:8px;">← 左右滑动查看更多区域 →</p></div>
+      
+      <!-- 主题详情页 -->
+      <div class="page" id="themeDetailPage"><div class="section-title"><h3 id="themeDetailTitle">水主题·邑仕庄园</h3><span onclick="backToHome()" style="cursor:pointer; background:#f1f5f9; padding:4px 12px; border-radius:12px;">← 返回</span></div><div class="card" style="padding:0; max-height:400px; overflow-y:auto;"><div style="padding:16px;" id="themeDetailContent"></div></div><div style="margin-top:16px;"><button class="btn-green" onclick="openCameraScanForTheme()">📷 扫码集章</button></div></div>
+
+      <!-- 新增：集章独立页面（徽章墙） -->
+      <div class="page" id="stampPage">
+        <div class="section-title"><h3>🏆 我的徽章墙</h3><span>收集密云印记</span></div>
+        <div class="card" style="text-align:center;">
+          <div class="flex" style="justify-content:space-between;"><span>集章进度</span><strong id="stampPageCount">2/4</strong></div>
+          <div class="progress-bar mt-2"><div class="progress-fill" id="stampPageFill" style="width:50%"></div></div>
+          <p style="font-size:13px; margin-top:12px;">✨ 每完成一个主题打卡，即可解锁对应徽章 ✨</p>
+        </div>
+        <div id="badgeWallContainer" class="badge-wall"></div>
+        <div style="margin-top:8px; margin-bottom:20px;">
+          <button class="btn-green" onclick="openGlobalCameraForStamp()">📷 扫码集章</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 底部导航：将“活动”改为“集章” -->
+    <div class="nav-bar">
+      <button class="nav-item active" data-page="homePage"><i>🏠</i>首页</button>
+      <button class="nav-item" data-page="shuttlePage"><i>🚌</i>接驳车</button>
+      <button class="nav-item" data-page="stampPage"><i>🏆</i>集章</button>
+      <button class="nav-item" data-page="forumPage"><i>💬</i>论坛</button>
+      <button class="nav-item" data-page="mapPage"><i>🗺️</i>地图</button>
+    </div>
+    
+    <div class="popup" id="globalPopup"><button class="popup-close" onclick="hideToast()">×</button><h4 id="popupTitle"></h4><p id="popupText"></p></div>
+    <div class="modal-overlay" id="postModal"><div class="modal-card"><h3>发布新帖</h3><div class="form-group"><label>文字内容</label><textarea id="postText" rows="3" placeholder="分享你的密云体验..."></textarea></div><div class="form-group"><label>上传图片</label><input type="file" accept="image/*" id="postImage" onchange="previewImage(event)"></div><div id="imagePreview"></div><div class="flex"><button class="icon-btn" style="flex:1;" onclick="closePostModal()">取消</button><button class="icon-btn" style="flex:1; background:linear-gradient(145deg,#10b981,#059669); color:white;" onclick="submitPost()">发布</button></div></div></div>
+    <div class="modal-overlay" id="cameraModal"><div class="modal-card"><div style="position:relative;"><video id="cameraVideo" autoplay playsinline></video><button class="popup-close" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); border-radius:50%;" onclick="closeCameraModal()">×</button></div><div class="camera-controls"><button class="icon-btn" style="flex:1; background:linear-gradient(145deg,#10b981,#059669); color:white;" onclick="captureAndScanForTarget()">拍照识别</button><button class="icon-btn" style="flex:1;" onclick="closeCameraModal()">取消</button></div><canvas id="cameraCanvas" style="display:none;"></canvas></div></div>
+
+    <!-- 菜单弹窗 -->
+    <div class="modal-overlay" id="menuModal"><div class="modal-card" style="padding:0; overflow:hidden;"><div style="background:linear-gradient(145deg,#10b981,#059669); color:white; padding:20px; text-align:center; cursor:pointer;" onclick="if(!getUserInfo()){closeMenu();openLoginModal();}"><div style="font-size:32px; margin-bottom:8px;">👤</div><div id="menuUserName" style="font-weight:700;">游客用户</div><div id="menuUserPhone" style="font-size:12px; opacity:0.8;">点击登录</div></div><div style="padding:8px 0;"><div class="menu-item" onclick="closeMenu(); openMyBookings();"><span>📋</span> 我的预约</div><div class="menu-item" onclick="closeMenu(); openMyProfile();"><span>👤</span> 个人信息</div><div class="menu-item" onclick="closeMenu(); showToast('设置', '功能开发中')"><span>⚙️</span> 设置</div><div class="menu-item" onclick="closeMenu(); logout();"><span>🚪</span> 退出登录</div></div></div></div>
+
+    <!-- 登录弹窗 -->
+    <div class="modal-overlay" id="loginModal"><div class="modal-card"><h3 style="margin-bottom:16px;">登录/注册</h3><div class="form-group"><label>手机号码</label><input type="tel" id="loginPhone" placeholder="请输入手机号" maxlength="11"></div><div class="form-group"><label>验证码</label><div class="flex" style="gap:8px;"><input type="text" id="loginCode" placeholder="请输入验证码" maxlength="6" style="flex:2;"><button id="sendCodeBtn" onclick="sendLoginCode()" style="background:transparent; color:#10b981; border:none; white-space:nowrap; font-size:12px; padding:0; cursor:pointer;">发送验证码</button></div></div><button class="btn-green" style="width:100%; margin-top:8px;" onclick="doLogin()">登录</button><p style="text-align:center; font-size:12px; color:#64748b; margin-top:12px;">登录即表示同意《用户协议》和《隐私政策》</p></div></div>
+
+    <!-- 我的预约弹窗 -->
+    <div class="modal-overlay" id="myBookingsModal"><div class="modal-card" style="max-height:80vh; overflow-y:auto;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><h3>📋 我的预约</h3><button class="popup-close" onclick="closeMyBookings()">×</button></div><div id="myBookingsList"></div></div></div>
+
+    <!-- 个人信息弹窗 -->
+    <div class="modal-overlay" id="profileModal"><div class="modal-card" style="max-height:80vh; overflow-y:auto;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><h3>👤 个人信息</h3><button class="popup-close" onclick="closeMyProfile()">×</button></div><div class="card"><div class="form-group"><label>姓名</label><input type="text" id="profileName" placeholder="请输入姓名"></div><div class="form-group"><label>手机号码</label><input type="tel" id="profilePhone" placeholder="请输入手机号" readonly></div><div class="form-group"><label>身份证号</label><input type="text" id="profileIdCard" placeholder="请输入身份证号"></div><div class="form-group"><label>常用邮箱</label><input type="email" id="profileEmail" placeholder="请输入邮箱"></div><button class="btn-green" style="width:100%; margin-top:8px;" onclick="saveProfile()">保存修改</button></div></div></div>
+
+    <!-- 徽章弹出图片层 -->
+    <div id="stampPopupLayer" class="stamp-popup-overlay" onclick="closeStampPopup()"><div class="stamp-popup-card" onclick="event.stopPropagation()"><img id="popupBadgeImg" src="" alt="徽章"><h3 id="popupBadgeTitle">获得徽章</h3><p id="popupBadgeDesc"></p><button class="btn-green" style="margin-top:16px;" onclick="closeStampPopup()">太棒了</button></div></div>
+  </div>
+</div>
+
+<script>
+  // ---------- 全局状态 ----------
+  let currentTheme = '水';
+  let stampCount = 2;
+  let currentLinePrice = 0;
+  let currentBookingLine = null;
+  let posts = [];
+  let currentPostId = null;
+  const currentUserId = 'user123';
+  let pendingStampTheme = null;    // 用于扫码时指定主题
+  
+  function navigateTo(pageId) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); document.querySelector(`.nav-item[data-page="${pageId}"]`)?.classList.add('active'); if(pageId==='forumPage') renderPosts(); if(pageId==='stampPage') renderStampPage(); }
+  
+  const themes = ['水', '林', '云', '日'];
+  const themeKeyMap = { '水':'shui', '林':'lin', '日':'ri', '云':'yun' };
+  const themeBgImg = { '水':'img/shui.jpg', '林':'img/lin.jpg', '日':'img/ri.jpg', '云':'img/yun.jpg' };
+  const themeUrlMap = { '水':'https://v.xiumius.cn/board/v5/6ikJQ/695913492', '林':'https://v.xiumius.cn/board/v5/6ikJQ/695916398', '日':'https://v.xiumius.cn/board/v5/6ikJQ/695918994', '云':'https://v.xiumius.cn/board/v5/6ikJQ/695870913' };
+  const themeData = {
+    '水':{ name:'邑仕庄园', subtitle:'湖光水色', desc:'临水而建的欧式庄园，纵览密云水库风光。适合拍照打卡和休闲漫游。', panelTag:'水主题', panelTitle:'湖光山色，漫步庄园', emoji:'💧' },
+    '林':{ name:'云蒙山', subtitle:'森林氧吧', desc:'被称为北方小黄山，原始森林与山野吸氧体验。适合放松身心和林间漫游。', panelTag:'林主题', panelTitle:'漫步山林，遇见自然氧吧', emoji:'🌲' },
+    '日':{ name:'日光山谷', subtitle:'向阳漫野', desc:'山谷日出、露营休闲、青年松弛路线。适合看风景、晒太阳和好友小聚。', panelTag:'日主题', panelTitle:'日光漫野，向阳而生', emoji:'☀️' },
+    '云':{ name:'云龙涧', subtitle:'云端探秘', desc:'奇峰怪石与深涧峡谷，云雾缭绕。适合轻登山打卡和体验高处视野。', panelTag:'云主题', panelTitle:'登高望远，把风景收到眼底', emoji:'☁️' }
+  };
+  
+  const shuttleLines = [
+    { id: '1A', name: '线路1A：黑山寺站 ↔ 云蒙山', distance: '12km · 约20分钟', times: '去程 09:00/10:30/12:00/14:30/16:00<br>返程 10:00/11:30/13:00/15:30/17:00', hint: '衔接 S501 (08:41到) / S503 (16:06到)', from: '黑山寺站', to: '云蒙山风景区', price: 18, recommendTime: '09:00' },
+    { id: '1B', name: '线路1B：黑山寺站 ↔ 日光山谷', distance: '17km · 约25分钟', times: '去程 09:00/10:30/12:00/14:30/16:00<br>返程 10:00/11:30/13:00/15:30/17:00', hint: '衔接 S501 / S503 高铁', from: '黑山寺站', to: '日光山谷', price: 20, recommendTime: '10:30' },
+    { id: '2', name: '线路2：密云站 ↔ 邑仕庄园（经日光山谷）', distance: '36km · 约50分钟', times: '密云站→邑仕庄园 07:00-17:00 每小时一班<br>返程 08:00-18:00 每小时一班', hint: '衔接高铁 G3661(06:49) / G3513(11:53) / G7867(15:47) 等', from: '密云站', to: '邑仕庄园', price: 30, recommendTime: '09:00' }
+  ];
+
+  function saveStampCount() { localStorage.setItem('miyun_stamps', stampCount); updateStampUI(); renderStampPageIfActive(); }
+  function updateStampUI() {
+    const isLoggedIn = !!getUserInfo();
+    const displayCount = isLoggedIn ? stampCount : 0;
+    document.getElementById('stampCountDisplay').innerText = displayCount+'/4';
+    document.getElementById('miniProgressFill').style.width = (displayCount/4*100)+'%';
+    document.getElementById('stampPageCount') && (document.getElementById('stampPageCount').innerText = displayCount+'/4');
+    document.getElementById('stampPageFill') && (document.getElementById('stampPageFill').style.width = (displayCount/4*100)+'%');
+    if(isLoggedIn) {
+      localStorage.setItem('miyun_stamps', stampCount);
+    }
+    renderStampIcons();
+  }
+  function renderStampIcons() {
+    const container = document.getElementById('stampIcons');
+    if(!container) return;
+    const stampImgs = ['stamp_shui.png', 'stamp_lin.png', 'stamp_ri.png', 'stamp_yun.png'];
+    const isLoggedIn = !!getUserInfo();
+    container.innerHTML = stampImgs.map((img, idx) => {
+      const unlocked = isLoggedIn && idx < stampCount;
+      return `<div class="stamp ${unlocked ? 'on' : ''}" data-idx="${idx}">
+        ${unlocked ? `<img src="img/${img}" alt="徽章">` : '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:24px;">🔒</div>'}
+      </div>`;
+    }).join('');
+  }
+  // 独立集章页渲染
+  function renderStampPage() {
+    const container = document.getElementById('badgeWallContainer');
+    if(!container) return;
+    const badgeData = [
+      { theme:'水', name:'邑仕庄园 · 碧波徽章', loc:'水主题', img:'img/stamp_shui.png' },
+      { theme:'林', name:'云蒙山 · 森林徽章', loc:'林主题', img:'img/stamp_lin.png' },
+      { theme:'云', name:'云龙涧 · 云海徽章', loc:'云主题', img:'img/stamp_yun.png' },
+      { theme:'日', name:'日光山谷 · 日出徽章', loc:'日主题', img:'img/stamp_ri.png' }
+    ];
+    const isLoggedIn = !!getUserInfo();
+    const idxMap = { '水':0, '林':1, '日':2, '云':3 };
+    container.innerHTML = badgeData.map((b, idx) => {
+      const unlocked = isLoggedIn && stampCount > idx;
+      return `<div class="badge-item ${unlocked ? 'unlocked' : 'locked'}">
+        <div class="badge-icon">${unlocked ? `<img src="${b.img}" style="width:180px;height:90px;object-fit:contain;display:block;">` : '🔒'}</div>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-location">📍 ${b.loc}</div>
+        <button class="scan-badge-btn" onclick="event.stopPropagation(); scanForSpecificTheme('${b.theme}')">${unlocked ? '✨ 已获得' : '📷 扫码打卡'}</button>
+      </div>`;
+    }).join('');
+  }
+  function renderStampPageIfActive() { if(document.getElementById('stampPage').classList.contains('active')) renderStampPage(); }
+  function scanForSpecificTheme(theme) {
+    if(!getUserInfo()) {
+      openLoginModal();
+      showToast('提示', '请先登录，点击右上角菜单栏');
+      return;
+    }
+    // 设置当前要扫描的主题，通过URL参数传递
+    sessionStorage.setItem('pendingStampTheme', theme);
+    // 打开扫码界面
+    openCameraForStamp();
+  }
+  async function openGlobalCameraForStamp() { await openCameraForStamp(); }
+  async function openCameraForStamp() {
+    const modal = document.getElementById('cameraModal');
+    modal.style.display = 'flex';
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      document.getElementById('cameraVideo').srcObject = stream;
+      window._cameraStream = stream;
+    } catch(e) { 
+      console.log('相机错误:', e);
+      if(e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+        showToast('相机权限', '请允许使用摄像头'); 
+      } else if(e.name === 'NotFoundError') {
+        showToast('相机错误', '未找到摄像头设备');
+      } else {
+        showToast('相机错误', '无法打开摄像头: ' + e.message);
+      }
+      closeCameraModal(); 
+    }
+  }
+  function closeCameraModal() { if(window._cameraStream) window._cameraStream.getTracks().forEach(t=>t.stop()); document.getElementById('cameraModal').style.display='none'; }
+  function captureAndScanForTarget() {
+    closeCameraModal();
+    
+    // 获取视频帧并尝试解析二维码
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 设置canvas尺寸与视频一致
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // 绘制视频帧到canvas
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // 获取图像数据
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    // 使用jsQR解析二维码
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    
+    if (code) {
+      // 解析成功，检查是否是我们的主题网址
+      const url = code.data;
+      const pendingTheme = sessionStorage.getItem('pendingStampTheme');
+
+      // 检查是否是我们的主题网址之一（宽松匹配）
+      let matchedTheme = null;
+      for (const [theme, themeUrl] of Object.entries(themeUrlMap)) {
+        if (url.includes(themeUrl.replace('https://', '').replace('http://', ''))) {
+          matchedTheme = theme;
+          break;
+        }
+      }
+
+      if (matchedTheme) {
+        // 无论是全局扫码(无pendingTheme)还是指定主题扫码，都允许解锁
+        if (!pendingTheme || pendingTheme === matchedTheme) {
+          const themeIndex = ['水', '林', '云', '日'].indexOf(matchedTheme);
+          if (themeIndex !== -1 && stampCount <= themeIndex) {
+            stampCount = themeIndex + 1;
+            saveStampCount();
+            // 记录刚才解锁的主题，方便从外部网页退回来时弹窗庆祝
+            sessionStorage.setItem('justUnlockedTheme', matchedTheme);
+          }
+        }
+        sessionStorage.removeItem('pendingStampTheme');
+        sessionStorage.setItem('returnedFromScan', 'true');
+        sessionStorage.setItem('visitedExternalTheme', 'true'); // 修复返回时的启动动画问题
+        // 跳转到对应的网址
+        window.location.href = url;
+      } else {
+        showToast('提示', '未识别到有效的主题二维码，请重试');
+      }
+    } else {
+      showToast('提示', '未识别到二维码，请重试');
+    }
+  }
+  function showStampPopup(theme) {
+    const themeImgMap = { '水':'img/stamp_shui.png', '林':'img/stamp_lin.png', '日':'img/stamp_ri.png', '云':'img/stamp_yun.png' };
+    const popImg = document.getElementById('popupBadgeImg');
+    popImg.src = themeImgMap[theme] || '';
+    document.getElementById('popupBadgeTitle').innerHTML = `🎉 获得${theme}主题徽章！`;
+    document.getElementById('popupBadgeDesc').innerHTML = `${themeData[theme]?.name || ''} · 打卡成功`;
+    const layer = document.getElementById('stampPopupLayer');
+    layer.classList.add('show');
+    setTimeout(() => closeStampPopup(), 2200);
+  }
+  function closeStampPopup() { document.getElementById('stampPopupLayer').classList.remove('show'); }
+  function simulateStamp() {
+    if(stampCount<4) { stampCount++; saveStampCount(); showStampPopup(themes[stampCount-1]); }
+    else showToast('已完成', '全部徽章已集齐！');
+  }
+
+  let startupFinished = false;
+  function updateStartupState() {
+    const slider = document.getElementById('startupSlider');
+    if(!slider) return;
+    const cards = slider.querySelectorAll('.startup-card');
+    const dots = document.querySelectorAll('.startup-dot');
+    const rect = slider.getBoundingClientRect();
+    const center = rect.left + rect.width / 2;
+    let activeIndex = 0;
+    let minDist = Infinity;
+    cards.forEach((card, index) => {
+      const r = card.getBoundingClientRect();
+      const dist = Math.abs(r.left + r.width / 2 - center);
+      if(dist < minDist) {
+        minDist = dist;
+        activeIndex = index;
+      }
+    });
+    cards.forEach((card, index) => card.classList.toggle('active', index === activeIndex));
+    dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
+  }
+
+  function renderStartupIntro() {
+    const slider = document.getElementById('startupSlider');
+    const dots = document.getElementById('startupDots');
+    if(!slider) return;
+    slider.innerHTML = themes.map(theme => {
+      const data = themeData[theme];
+      return `
+        <section class="startup-card" style="--bg:url('${themeBgImg[theme]}')">
+          <div class="startup-card-inner">
+            <article class="startup-poster">
+              <div style="position:relative; flex:1; min-height:0; overflow:hidden;">
+                <img class="startup-poster-photo" src="${themeBgImg[theme]}" alt="${data.name}">
+              </div>
+            </article>
+          </div>
+        </section>
+      `;
+    }).join('');
+    dots.innerHTML = themes.map((_, index) => `<span class="startup-dot ${index === 0 ? 'active' : ''}"></span>`).join('');
+    slider.addEventListener('scroll', updateStartupState, { passive: true });
+    setTimeout(updateStartupState, 80);
+  }
+
+  function finishStartupIntro() {
+    if(startupFinished) return;
+    startupFinished = true;
+    const overlay = document.getElementById('startupOverlay');
+    const app = document.getElementById('appRoot');
+    overlay.classList.add('hidden');
+    app.classList.remove('entering');
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      updateThemeHeroState();
+    }, 480);
+  }
+
+  function updateThemeHeroState() {
+    const container = document.getElementById('themeHeroList');
+    if(!container) return;
+    const cards = container.querySelectorAll('.theme-hero-item');
+    const dots = document.querySelectorAll('.theme-hero-dot');
+    const rect = container.getBoundingClientRect();
+    const center = rect.left + rect.width / 2;
+    let activeIndex = 0;
+    let minDist = Infinity;
+    cards.forEach((card, index) => {
+      const r = card.getBoundingClientRect();
+      const dist = Math.abs(r.left + r.width / 2 - center);
+      if(dist < minDist) {
+        minDist = dist;
+        activeIndex = index;
+      }
+    });
+    cards.forEach((card, index) => card.classList.toggle('active-card', index === activeIndex));
+    dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex));
+    currentTheme = themes[activeIndex] || currentTheme;
+  }
+
+  function renderThemeHeroList() {
+    const container = document.getElementById('themeHeroList');
+    const dots = document.getElementById('themeHeroDots');
+    if(!container) return;
+    container.innerHTML = themes.map(theme => {
+      const data = themeData[theme];
+      const photoPositionMap = { '水':'center center', '林':'center center', '日':'center top', '云':'center center' };
+      return `
+        <section class="theme-hero-item" onclick="goToThemeDetail('${theme}')" style="cursor: pointer;">
+          <div class="theme-hero-bg" style="background-image:url('${themeBgImg[theme]}')"></div>
+          <div class="theme-hero-mask"></div>
+          <div class="theme-hero-inner">
+            <article class="theme-poster-sheet">
+              <div class="theme-poster-visual">
+                <img class="theme-poster-photo" src="${themeBgImg[theme]}" alt="${data.name}" style="object-position:${photoPositionMap[theme] || 'center center'};">
+                <div class="theme-poster-gradient"></div>
+              </div>
+            </article>
+          </div>
+        </section>
+      `;
+    }).join('');
+    if(dots) {
+      dots.innerHTML = themes.map((_, index) => `<span class="theme-hero-dot ${index === 0 ? 'active' : ''}"></span>`).join('');
+    }
+    container.removeEventListener('scroll', updateThemeHeroState);
+    container.addEventListener('scroll', updateThemeHeroState, { passive: true });
+    setTimeout(updateThemeHeroState, 80);
+  }
+  function renderShuttles() {
+    const container = document.getElementById('shuttleLinesContainer');
+    container.innerHTML = shuttleLines.map(line => `<div class="card shuttle-card" data-line-id="${line.id}"><div><strong style="font-size:18px;">🚌 ${line.name}</strong><div style="font-size:13px;">${line.distance}</div></div><div style="margin:12px 0 8px; font-size:13px;">⏰ ${line.times}</div><div style="background:#f1f5f9; border-radius:16px; padding:8px; font-size:12px;">🚄 ${line.hint}</div><button class="btn-green" style="margin-top:12px;" onclick="event.stopPropagation(); openBooking('${line.id}')">立即预约</button></div>`).join('');
+  }
+  function openBooking(lineId) { if(!getUserInfo()){ showToast('提示','请先登录，点击右上角菜单栏'); return; } const line = shuttleLines.find(l=>l.id===lineId); if(line){ currentBookingLine=line; currentLinePrice=line.price; document.getElementById('departure').value=line.from; document.getElementById('destination').value=line.to; const timeSelect=document.getElementById('travelTime'); timeSelect.innerHTML=''; const times=line.id==='2'?['07:00','08:00','09:00','10:00','12:00','13:00','14:00','15:00','16:00','17:00']:['09:00','10:30','12:00','14:30','16:00']; times.forEach(t=>{const opt=document.createElement('option');opt.value=t;opt.text=t;if(t===line.recommendTime)opt.selected=true;timeSelect.appendChild(opt);}); document.getElementById('totalPriceDisplay').innerText='¥'+line.price; document.getElementById('travelDate').valueAsDate=new Date(); document.querySelector('input[name="tripType"][value="去程"]').checked=true; updatePrice(); document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('bookingFormPage').classList.add('active'); showToast('已预填信息','请确认行程'); } }
+  function updatePrice(){ const type=document.querySelector('input[name="tripType"]:checked').value; const total=type==='往返'?currentLinePrice*2:currentLinePrice; document.getElementById('totalPriceDisplay').innerText='¥'+total; }
+  function submitBooking(){ const phone=document.getElementById('phoneNumber').value; if(!phone){ showToast('提示','请填写手机号'); return; } const bookings=getMyBookings(); const newBooking={ id:'b'+Date.now(), departure:document.getElementById('departure').value, destination:document.getElementById('destination').value, passengerCount:document.getElementById('passengerCount').value, phone:phone, date:document.getElementById('travelDate').value, time:document.getElementById('travelTime').value, tripType:document.querySelector('input[name="tripType"]:checked').value, price:currentLinePrice, status:'confirmed' }; bookings.push(newBooking); setMyBookings(bookings); showToast('预约成功','您的接驳车已预订'); setTimeout(()=>backToShuttle(),1500); }
+  function backToShuttle(){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('shuttlePage').classList.add('active'); }
+  function goToThemeDetail(theme){ 
+    const externalLinks = {
+      '水': 'https://v.xiumius.cn/board/v5/6ikJQ/695101950',
+      '林': 'https://v.xiumius.cn/board/v5/6ikJQ/695343728',
+      '日': 'https://v.xiumius.cn/board/v5/6ikJQ/695366457',
+      '云': 'https://v.xiumius.cn/board/v5/6ikJQ/692903739'
+    };
+    if (externalLinks[theme]) {
+      // 记录状态，这样浏览器后退时不会再显示启动动画
+      sessionStorage.setItem('visitedExternalTheme', 'true');
+      window.location.href = externalLinks[theme];
+    }
+  }
+  function backToHome(){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('homePage').classList.add('active'); setTimeout(updateThemeHeroState, 60); }
+  function speakText(){ const t=document.querySelector('#themeDetailContent p')?.innerText; if(t&&window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance(t)); else showToast('提示','语音暂不支持'); }
+  function openCameraScanForTheme(){ window.location.href = themeUrlMap[currentTheme]; }
+  function goToActivityDetail(type){ let title=type==='concert'?'音乐会':(type==='photo'?'摄影打卡':'通知'); document.getElementById('activityDetailTitle').innerText=title; document.getElementById('activityDetailContent').innerHTML=`<p>${title}详细内容……活动具体安排请关注密云文旅公众号。</p>`; document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('activityDetailPage').classList.add('active'); }
+  function backToHomeFromActivity(){ backToHome(); }
+  function showToast(title,msg){ document.getElementById('popupTitle').innerText=title; document.getElementById('popupText').innerText=msg; const pop=document.getElementById('globalPopup'); pop.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>pop.classList.remove('show'),2500); }
+  function hideToast(){ document.getElementById('globalPopup').classList.remove('show'); }
+  
+  // 论坛相关（保持原逻辑）
+  function loadPosts(){ const saved=localStorage.getItem('miyun_posts'); if(saved) posts=JSON.parse(saved); else posts=[{id:'p1',author:'旅行青年',time:'2小时前',text:'邑仕庄园的湖景超美！',image:null,likes:24,comments:[],likedBy:[]},{id:'p2',author:'森林探险家',time:'昨天',text:'云蒙山森林徒步，空气超棒！',image:null,likes:18,comments:[],likedBy:[]}]; posts.forEach(p=>{if(!p.likedBy)p.likedBy=[];}); savePosts(); renderPosts(); }
+  function savePosts(){ localStorage.setItem('miyun_posts',JSON.stringify(posts)); }
+  function renderPosts(){ const container=document.getElementById('postList'); if(!container) return; container.innerHTML=posts.map(p=>{const isLiked=p.likedBy.includes(currentUserId); return `<div class="post-card" onclick="viewPostDetail('${p.id}')"><div><strong>${p.author}</strong> <span style="font-size:12px;">${p.time}</span></div><p style="margin:10px 0;">${p.text}</p>${p.image?`<img src="${p.image}" style="width:100%;border-radius:12px;">`:''}<div class="flex"><span onclick="event.stopPropagation();toggleLike('${p.id}')" style="color:${isLiked?'#ef4444':''}">❤️ ${p.likes}</span><span>💬 ${p.comments.length}</span></div></div>`;}).join(''); }
+  window.toggleLike=function(id){ const p=posts.find(p=>p.id===id); if(p){ const idx=p.likedBy.indexOf(currentUserId); if(idx===-1){ p.likedBy.push(currentUserId); p.likes++; } else { p.likedBy.splice(idx,1); p.likes--; } savePosts(); renderPosts(); if(currentPostId===id) renderPostDetail(id); } };
+  function viewPostDetail(id){ currentPostId=id; renderPostDetail(id); document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('postDetailPage').classList.add('active'); }
+  function renderPostDetail(id){ const p=posts.find(p=>p.id===id); if(!p) return; const liked=p.likedBy.includes(currentUserId); document.getElementById('postDetailContent').innerHTML=`<div class="card"><div><strong>${p.author}</strong><span style="margin-left:10px;">${p.time}</span></div><p style="margin:12px 0;">${p.text}</p>${p.image?`<img src="${p.image}" style="width:100%;border-radius:12px;">`:''}<div class="flex"><span onclick="toggleLike('${p.id}')" style="color:${liked?'#ef4444':''}">❤️ ${p.likes}</span><span>💬 ${p.comments.length}</span></div><div><strong>评论</strong><div id="commentList">${p.comments.map(c=>`<div style="background:#f8fafc; margin:8px 0; padding:8px; border-radius:16px;">${c}</div>`).join('')}</div><div class="flex mt-2"><input id="newCommentInput" placeholder="写评论..." style="flex:1;"><button class="btn-green" style="width:auto; padding:0 16px;" onclick="addComment('${p.id}')">发送</button></div></div>`; }
+  window.addComment=function(id){ const inp=document.getElementById('newCommentInput'); if(inp.value.trim()){ const p=posts.find(p=>p.id===id); p.comments.push(inp.value.trim()); savePosts(); renderPostDetail(id); renderPosts(); inp.value=''; showToast('评论','评论已发布'); } };
+  function backToForum(){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('forumPage').classList.add('active'); renderPosts(); }
+  let tempImage=null;
+  function openNewPostModal(){ document.getElementById('postModal').style.display='flex'; }
+  function closePostModal(){ document.getElementById('postModal').style.display='none'; document.getElementById('postText').value=''; document.getElementById('postImage').value=''; document.getElementById('imagePreview').innerHTML=''; tempImage=null; }
+  function previewImage(e){ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=ev=>{ tempImage=ev.target.result; document.getElementById('imagePreview').innerHTML=`<img src="${ev.target.result}" style="width:100%;border-radius:12px;">`; }; reader.readAsDataURL(file); } }
+  function submitPost(){ const text=document.getElementById('postText').value.trim(); if(!text){ showToast('提示','请输入内容'); return; } const newPost={ id:'p'+Date.now(), author:'我', time:'刚刚', text:text, image:tempImage, likes:0, comments:[], likedBy:[] }; posts.unshift(newPost); savePosts(); renderPosts(); closePostModal(); showToast('发布成功','帖子已发布'); }
+
+  // ---------- 用户登录状态 ----------
+  let currentUser = null;
+  function getUserInfo(){ const saved=localStorage.getItem('miyun_user'); return saved?JSON.parse(saved):null; }
+  function setUserInfo(user){ localStorage.setItem('miyun_user',JSON.stringify(user)); }
+  function getMyBookings(){ const saved=localStorage.getItem('miyun_bookings'); return saved?JSON.parse(saved):[]; }
+  function setMyBookings(bookings){ localStorage.setItem('miyun_bookings',JSON.stringify(bookings)); }
+  function toggleMenu(){ const modal=document.getElementById('menuModal'); modal.style.display=modal.style.display==='flex'?'none':'flex'; updateMenuDisplay(); }
+  function closeMenu(){ document.getElementById('menuModal').style.display='none'; }
+  function updateMenuDisplay(){ const user=getUserInfo(); if(user){ document.getElementById('menuUserName').innerText=user.name||'用户'; document.getElementById('menuUserPhone').innerText=user.phone?'手机: '+user.phone:''; }else{ document.getElementById('menuUserName').innerText='游客用户'; document.getElementById('menuUserPhone').innerText='点击登录'; } updateStampUI(); renderStampPageIfActive(); }
+  function openMyBookings(){ if(!getUserInfo()){ closeMenu(); openLoginModal(); showToast('提示','请先登录，点击右上角菜单栏'); return; } const modal=document.getElementById('myBookingsModal'); modal.style.display='flex'; renderMyBookings(); }
+  function closeMyBookings(){ document.getElementById('myBookingsModal').style.display='none'; }
+  function renderMyBookings(){ const bookings=getMyBookings(); const list=document.getElementById('myBookingsList'); if(bookings.length===0){ list.innerHTML='<p style="text-align:center; color:#64748b; padding:20px;">暂无预约记录</p>'; return; } list.innerHTML=bookings.map(b=>`<div class="booking-card"><div class="booking-card-header"><span class="booking-card-route">${b.departure} → ${b.destination}</span><span class="booking-card-status ${b.status}">${b.status==='confirmed'?'已确认':(b.status==='pending'?'待支付':'已取消')}</span></div><div class="booking-card-info">📅 ${b.date} ${b.time}</div><div class="booking-card-info">👥 ${b.passengerCount}人 | 💰 ¥${b.price}</div><div class="booking-card-actions"><button class="btn-cancel" onclick="cancelBooking('${b.id}')">取消预约</button><button class="btn-modify" onclick="modifyBooking('${b.id}')">修改</button></div></div>`).join(''); }
+  function cancelBooking(id){ if(confirm('确定要取消这个预约吗？')){ let bookings=getMyBookings(); const b=bookings.find(b=>b.id===id); if(b){ b.status='cancelled'; setMyBookings(bookings); renderMyBookings(); showToast('已取消','预约已取消'); } } }
+  function modifyBooking(id){ closeMyBookings(); let bookings=getMyBookings(); const b=bookings.find(b=>b.id===id); if(b){ const line=shuttleLines.find(l=>l.from===b.departure&&l.to===b.destination); if(line){ currentBookingLine=line; currentLinePrice=line.price; document.getElementById('departure').value=b.departure; document.getElementById('destination').value=b.destination; document.getElementById('passengerCount').value=b.passengerCount; document.getElementById('phoneNumber').value=b.phone; document.getElementById('travelDate').value=b.date; const timeSelect=document.getElementById('travelTime'); timeSelect.innerHTML=''; const times=line.id==='2'?['07:00','08:00','09:00','10:00','12:00','13:00','14:00','15:00','16:00','17:00']:['09:00','10:30','12:00','14:30','16:00']; times.forEach(t=>{const opt=document.createElement('option');opt.value=t;opt.text=t;if(t===b.time)opt.selected=true;timeSelect.appendChild(opt);}); document.querySelectorAll('input[name="tripType"]').forEach(r=>r.checked=r.value===b.tripType); updatePrice(); navigateTo('bookingFormPage'); } } }
+  function openMyProfile(){ if(!getUserInfo()){ closeMenu(); openLoginModal(); showToast('提示','请先登录，点击右上角菜单栏'); return; } const modal=document.getElementById('profileModal'); modal.style.display='flex'; const user=getUserInfo(); document.getElementById('profileName').value=user.name||''; document.getElementById('profilePhone').value=user.phone||''; document.getElementById('profileIdCard').value=user.idCard||''; document.getElementById('profileEmail').value=user.email||''; }
+  function closeMyProfile(){ document.getElementById('profileModal').style.display='none'; }
+  function saveProfile(){ const user=getUserInfo()||{}; user.name=document.getElementById('profileName').value; user.phone=document.getElementById('profilePhone').value; user.idCard=document.getElementById('profileIdCard').value; user.email=document.getElementById('profileEmail').value; setUserInfo(user); closeMyProfile(); showToast('保存成功','个人信息已更新'); }
+  function logout(){ if(confirm('确定要退出登录吗？')){ localStorage.removeItem('miyun_user'); currentUser=null; closeMenu(); showToast('已退出','已退出登录'); updateMenuDisplay(); } }
+  function openLoginModal(){ const modal=document.getElementById('loginModal'); modal.style.display='flex'; document.getElementById('loginPhone').value=''; document.getElementById('loginCode').value=''; }
+  function closeLoginModal(){ document.getElementById('loginModal').style.display='none'; }
+  function sendLoginCode(){ const phone=document.getElementById('loginPhone').value; if(!phone||phone.length!==11){ showToast('提示','请输入正确的手机号'); return; } const btn=document.getElementById('sendCodeBtn'); btn.disabled=true; btn.style.color='#64748b'; let countdown=60; btn.innerText='重新发送('+countdown+')'; const timer=setInterval(()=>{countdown--;btn.innerText='重新发送('+countdown+')';if(countdown<=0){clearInterval(timer);btn.disabled=false;btn.style.color='#10b981';btn.innerText='发送验证码';}},1000); showToast('发送成功','验证码已发送'); }
+  function doLogin(){ const phone=document.getElementById('loginPhone').value; const code=document.getElementById('loginCode').value; if(!phone||phone.length!==11){ showToast('提示','请输入正确的手机号'); return; } if(!code||code.length!==6){ showToast('提示','请输入6位验证码'); return; } const user={name:'用户',phone:phone,idCard:'',email:''}; setUserInfo(user); currentUser=user; closeLoginModal(); updateMenuDisplay(); showToast('登录成功','欢迎回来！'); }
+  
+  // 导航
+  document.querySelectorAll('.nav-item').forEach(btn=>{ btn.addEventListener('click',()=>{ const pageId=btn.dataset.page; if((pageId==='shuttlePage'||pageId==='stampPage'||pageId==='forumPage')&&!getUserInfo()){ showToast('提示','请先登录，点击右上角菜单栏'); return; } document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(pageId==='forumPage') renderPosts(); if(pageId==='stampPage') renderStampPage();  }); });
+  
+  // 初始化
+  const savedStamps = localStorage.getItem('miyun_stamps');
+  // 读取保存的值，默认值为2
+  stampCount = savedStamps ? parseInt(savedStamps) : 2;
+  renderStampIcons(); renderThemeHeroList(); renderStartupIntro(); renderShuttles(); loadPosts(); updateStampUI(); renderStampPage();
+
+  // 检查是否从外部链接跳转回来
+  if (sessionStorage.getItem('visitedExternalTheme')) {
+    finishStartupIntro();
+    sessionStorage.removeItem('visitedExternalTheme');
+  }
+
+  // 检查是否从扫码页面返回
+  const returnedFromScan = sessionStorage.getItem('returnedFromScan');
+  if (returnedFromScan) {
+    sessionStorage.removeItem('returnedFromScan');
+    const newStamps = localStorage.getItem('miyun_stamps');
+    stampCount = newStamps ? parseInt(newStamps) : 2;
+    updateStampUI();
+    renderStampPage();
+    
+    // 如果刚刚有解锁的徽章，则弹窗庆祝
+    const unlockedTheme = sessionStorage.getItem('justUnlockedTheme');
+    if (unlockedTheme) {
+      sessionStorage.removeItem('justUnlockedTheme');
+      setTimeout(() => showStampPopup(unlockedTheme), 500);
+    } else {
+      setTimeout(() => showToast('欢迎回来', '打卡成功！'), 500);
+    }
+  }
+
+  // 监听页面可见性变化，当页面从隐藏变为可见时重新加载徽章状态
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      const savedStamps = localStorage.getItem('miyun_stamps');
+      stampCount = savedStamps ? parseInt(savedStamps) : 2;
+      updateStampUI();
+      renderStampPage();
+    }
+  });
+</script>
+</body>
+</html>
