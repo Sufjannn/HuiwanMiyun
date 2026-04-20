@@ -1442,6 +1442,8 @@
       '云': 'https://v.xiumius.cn/board/v5/6ikJQ/692903739'
     };
     if (externalLinks[theme]) {
+      // 记录状态，这样浏览器后退时不会再显示启动动画
+      sessionStorage.setItem('visitedExternalTheme', 'true');
       window.location.href = externalLinks[theme];
     }
   }
@@ -1499,6 +1501,12 @@
   // 读取保存的值，默认值为2
   stampCount = savedStamps ? parseInt(savedStamps) : 2;
   renderStampIcons(); renderThemeHeroList(); renderStartupIntro(); renderShuttles(); loadPosts(); updateStampUI(); renderStampPage();
+
+  // 检查是否从外部链接跳转回来
+  if (sessionStorage.getItem('visitedExternalTheme')) {
+    finishStartupIntro();
+    sessionStorage.removeItem('visitedExternalTheme');
+  }
 
   // 检查是否从扫码页面返回
   const returnedFromScan = sessionStorage.getItem('returnedFromScan');
