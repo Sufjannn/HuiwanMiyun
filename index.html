@@ -1044,7 +1044,7 @@
       </div>
     </div>
 
-    <div class="status-bar"><span>9:41</span><span>📶 5G</span></div>
+
     <div class="topbar">
       <div class="brand"><div class="logo">密</div><div><h1>青年玩法</h1><p>惠玩密云·友好文旅体验</p></div></div>
       <button class="icon-btn" id="menuBtn" onclick="toggleMenu()">☰</button>
@@ -1087,7 +1087,7 @@
       <div class="page" id="mapPage"><div class="section-title"><h3>景区地图</h3><span>左右滑动·点击标记</span></div><div class="card" style="padding:8px;"><div class="map-scroll" id="mapScroll"><div class="map-image-container"><img src="img/map.png" alt="密云景区地图" class="map-image" id="mapImage"><div class="map-marker" style="left:15.63%; top:57.5%;" onclick="showToast('云蒙山', '集山水风光、康养休闲、户外运动、大自然游学于一体，拥有2.5公里长的索道，是观赏密云水库和长城遗址的绝佳位置。\n \t 半山520爱之谷的湖畔帐篷餐厅、心锁桥、高山叠瀑、松塔乐园、3D彩绘等充满浪漫色彩。\n \t 山脊森林中的丛林穿越、1314音乐栈道等体验项目充满惊奇刺激，是罕有的可以观山观水观长城，赏云赏瀑赏石松的京华胜境。')"></div><div class="map-marker" style="left:37.5%; top:80.0%;" onclick="showToast('日光山谷', '秉承日光旅文的核心理念，创造用心、有爱的家庭度假产品，让每一个家庭成员拥有更多陪伴和快乐为品牌使命，倡导在自然中陪伴，在陪伴中快乐的生活方式，为消费者提供高品质的度假休闲场景。')"></div><div class="map-marker" style="left:38.75%; top:67.5%;" onclick="showToast('邑仕庄园', '背靠白龙山，前有凤凰岭，面向密云水库，与绿山净水完美组合，构成了「清山为体，碧水为魂」的独特景观,保留了山体的自然风貌。\n \t 庄园中主体建筑为十八世纪欧式城堡风格，并融入中国传统文化，中西文化融为一体，并已经推出餐饮、住宿、采摘、亲子、会议、拓展等服务。')"></div><div class="map-marker" style="left:17.5%; top:72.5%;" onclick="showToast('云龙涧', '是一条布满深潭、瀑布、奇峰、怪石、林海、长城的大峡谷。大小景观数百处，一步见三景，三景只一步。\n \t 景区由「深涧透云峡」「登高好汉坡」「幽林十八盘」「怀古览胜景」「奥运中国印摩崖石刻」，五大主题风景走廊构成，随高度呈变化，深邃莫测，到达山顶您可以欣赏到密云水库的全景。')"></div><div class="map-marker" style="left:71.25%; top:27.5%;" onclick="showToast('古北水镇', '距首都机场仅120公里\n \t 坐拥鸳鸯湖水库、背靠中国最美最险的司马台长城，是长城脚下独具北方风情的度假式小镇，也是集观光游览、休闲度假、商务会展、创意文化等旅游业态为一体，服务与设施一流、参与性和体验性极高的综合性特色休闲国际旅游度假目的地。')"></div><div class="map-marker" style="left:65.6%; top:17.5%;" onclick="showToast('司马台长城', '唯一一段保留明长城原貌的古长城，国内目前唯一开放夜游的长城，以其险、密、齐、巧、全五大特点著称于世\n \t「中国长城是世界之最，司马台长城堪称中国长城之最」。')"></div></div></div></div><p style="text-align:center; color:#64748b; font-size:13px; margin-top:8px;">← 左右滑动查看更多区域 →</p></div>
       
       <!-- 主题详情页 -->
-      <div class="page" id="themeDetailPage"><div class="section-title"><h3 id="themeDetailTitle">水主题·邑仕山庄</h3><span onclick="backToHome()" style="cursor:pointer; background:#f1f5f9; padding:4px 12px; border-radius:12px;">← 返回</span></div><div class="card" style="padding:0; max-height:400px; overflow-y:auto;"><div style="padding:16px;" id="themeDetailContent"></div></div><div style="margin-top:16px;"><button class="btn-green" onclick="openCameraScanForTheme()">📷 扫码集章</button></div></div>
+      <div class="page" id="themeDetailPage"><div class="section-title"><h3 id="themeDetailTitle">水主题·邑仕庄园</h3><span onclick="backToHome()" style="cursor:pointer; background:#f1f5f9; padding:4px 12px; border-radius:12px;">← 返回</span></div><div class="card" style="padding:0; max-height:400px; overflow-y:auto;"><div style="padding:16px;" id="themeDetailContent"></div></div><div style="margin-top:16px;"><button class="btn-green" onclick="openCameraScanForTheme()">📷 扫码集章</button></div></div>
 
       <!-- 新增：集章独立页面（徽章墙） -->
       <div class="page" id="stampPage">
@@ -1147,19 +1147,19 @@
   
   function navigateTo(pageId) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); document.querySelector(`.nav-item[data-page="${pageId}"]`)?.classList.add('active'); if(pageId==='forumPage') renderPosts(); if(pageId==='stampPage') renderStampPage(); }
   
-  const themes = ['水', '林', '日', '云'];
+  const themes = ['水', '林', '云', '日'];
   const themeKeyMap = { '水':'shui', '林':'lin', '日':'ri', '云':'yun' };
   const themeBgImg = { '水':'img/shui.jpg', '林':'img/lin.jpg', '日':'img/ri.jpg', '云':'img/yun.jpg' };
   const themeUrlMap = { '水':'https://v.xiumius.cn/board/v5/6ikJQ/695913492', '林':'https://v.xiumius.cn/board/v5/6ikJQ/695916398', '日':'https://v.xiumius.cn/board/v5/6ikJQ/695918994', '云':'https://v.xiumius.cn/board/v5/6ikJQ/695870913' };
   const themeData = {
-    '水':{ name:'邑仕山庄', subtitle:'湖光水色', desc:'临水而建的欧式山庄，纵览密云水库风光。适合拍照打卡和休闲漫游。', panelTag:'水主题', panelTitle:'湖光山色，漫步庄园', emoji:'💧' },
+    '水':{ name:'邑仕庄园', subtitle:'湖光水色', desc:'临水而建的欧式庄园，纵览密云水库风光。适合拍照打卡和休闲漫游。', panelTag:'水主题', panelTitle:'湖光山色，漫步庄园', emoji:'💧' },
     '林':{ name:'云蒙山', subtitle:'森林氧吧', desc:'被称为北方小黄山，原始森林与山野吸氧体验。适合放松身心和林间漫游。', panelTag:'林主题', panelTitle:'漫步山林，遇见自然氧吧', emoji:'🌲' },
     '日':{ name:'日光山谷', subtitle:'向阳漫野', desc:'山谷日出、露营休闲、青年松弛路线。适合看风景、晒太阳和好友小聚。', panelTag:'日主题', panelTitle:'日光漫野，向阳而生', emoji:'☀️' },
     '云':{ name:'云龙涧', subtitle:'云端探秘', desc:'奇峰怪石与深涧峡谷，云雾缭绕。适合轻登山打卡和体验高处视野。', panelTag:'云主题', panelTitle:'登高望远，把风景收到眼底', emoji:'☁️' }
   };
   
   const shuttleLines = [
-    { id: '1A', name: '线路1A：黑山寺站 ↔ 云蒙山', distance: '12km · 约20分钟', times: '去程 09:00/10:30/12:00/14:30<br>返程 10:00/11:30/13:00/15:30', hint: '衔接 S501 (08:41到) / S503 (16:06到)', from: '黑山寺站', to: '云蒙山风景区', price: 18, recommendTime: '09:00' },
+    { id: '1A', name: '线路1A：黑山寺站 ↔ 云蒙山', distance: '12km · 约20分钟', times: '去程 09:00/10:30/12:00/14:30/16:00<br>返程 10:00/11:30/13:00/15:30/17:00', hint: '衔接 S501 (08:41到) / S503 (16:06到)', from: '黑山寺站', to: '云蒙山风景区', price: 18, recommendTime: '09:00' },
     { id: '1B', name: '线路1B：黑山寺站 ↔ 日光山谷', distance: '17km · 约25分钟', times: '去程 09:00/10:30/12:00/14:30/16:00<br>返程 10:00/11:30/13:00/15:30/17:00', hint: '衔接 S501 / S503 高铁', from: '黑山寺站', to: '日光山谷', price: 20, recommendTime: '10:30' },
     { id: '2', name: '线路2：密云站 ↔ 邑仕庄园（经日光山谷）', distance: '36km · 约50分钟', times: '密云站→邑仕庄园 07:00-17:00 每小时一班<br>返程 08:00-18:00 每小时一班', hint: '衔接高铁 G3661(06:49) / G3513(11:53) / G7867(15:47) 等', from: '密云站', to: '邑仕庄园', price: 30, recommendTime: '09:00' }
   ];
@@ -1194,10 +1194,10 @@
     const container = document.getElementById('badgeWallContainer');
     if(!container) return;
     const badgeData = [
-      { theme:'水', name:'邑仕山庄 · 碧波徽章', loc:'邑仕山庄', img:'img/stamp_shui.png' },
-      { theme:'林', name:'云蒙山 · 森林徽章', loc:'云蒙山', img:'img/stamp_lin.png' },
-      { theme:'日', name:'日光山谷 · 日出徽章', loc:'日光山谷', img:'img/stamp_ri.png' },
-      { theme:'云', name:'云龙涧 · 云海徽章', loc:'云龙涧', img:'img/stamp_yun.png' }
+      { theme:'水', name:'邑仕庄园 · 碧波徽章', loc:'水主题', img:'img/stamp_shui.png' },
+      { theme:'林', name:'云蒙山 · 森林徽章', loc:'林主题', img:'img/stamp_lin.png' },
+      { theme:'云', name:'云龙涧 · 云海徽章', loc:'云主题', img:'img/stamp_yun.png' },
+      { theme:'日', name:'日光山谷 · 日出徽章', loc:'日主题', img:'img/stamp_ri.png' }
     ];
     const isLoggedIn = !!getUserInfo();
     const idxMap = { '水':0, '林':1, '日':2, '云':3 };
@@ -1215,7 +1215,7 @@
   function scanForSpecificTheme(theme) {
     if(!getUserInfo()) {
       openLoginModal();
-      showToast('提示', '请先登录');
+      showToast('提示', '请先登录，点击右上角菜单栏');
       return;
     }
     // 设置当前要扫描的主题，通过URL参数传递
@@ -1280,18 +1280,19 @@
       }
 
       if (matchedTheme) {
-        // 检查是否是用户正在扫描的主题
-        if (pendingTheme && pendingTheme === matchedTheme) {
-          // 解锁对应的徽章
-          const themeIndex = ['水', '林', '日', '云'].indexOf(matchedTheme);
+        // 无论是全局扫码(无pendingTheme)还是指定主题扫码，都允许解锁
+        if (!pendingTheme || pendingTheme === matchedTheme) {
+          const themeIndex = ['水', '林', '云', '日'].indexOf(matchedTheme);
           if (themeIndex !== -1 && stampCount <= themeIndex) {
             stampCount = themeIndex + 1;
             saveStampCount();
-            showToast('成功', '徽章解锁成功！');
+            // 记录刚才解锁的主题，方便从外部网页退回来时弹窗庆祝
+            sessionStorage.setItem('justUnlockedTheme', matchedTheme);
           }
         }
         sessionStorage.removeItem('pendingStampTheme');
         sessionStorage.setItem('returnedFromScan', 'true');
+        sessionStorage.setItem('visitedExternalTheme', 'true'); // 修复返回时的启动动画问题
         // 跳转到对应的网址
         window.location.href = url;
       } else {
@@ -1405,7 +1406,7 @@
       const data = themeData[theme];
       const photoPositionMap = { '水':'center center', '林':'center center', '日':'center top', '云':'center center' };
       return `
-        <section class="theme-hero-item">
+        <section class="theme-hero-item" onclick="goToThemeDetail('${theme}')" style="cursor: pointer;">
           <div class="theme-hero-bg" style="background-image:url('${themeBgImg[theme]}')"></div>
           <div class="theme-hero-mask"></div>
           <div class="theme-hero-inner">
@@ -1430,11 +1431,23 @@
     const container = document.getElementById('shuttleLinesContainer');
     container.innerHTML = shuttleLines.map(line => `<div class="card shuttle-card" data-line-id="${line.id}"><div><strong style="font-size:18px;">🚌 ${line.name}</strong><div style="font-size:13px;">${line.distance}</div></div><div style="margin:12px 0 8px; font-size:13px;">⏰ ${line.times}</div><div style="background:#f1f5f9; border-radius:16px; padding:8px; font-size:12px;">🚄 ${line.hint}</div><button class="btn-green" style="margin-top:12px;" onclick="event.stopPropagation(); openBooking('${line.id}')">立即预约</button></div>`).join('');
   }
-  function openBooking(lineId) { if(!getUserInfo()){ showToast('提示','请先登录'); return; } const line = shuttleLines.find(l=>l.id===lineId); if(line){ currentBookingLine=line; currentLinePrice=line.price; document.getElementById('departure').value=line.from; document.getElementById('destination').value=line.to; const timeSelect=document.getElementById('travelTime'); timeSelect.innerHTML=''; const times=line.id==='2'?['07:00','08:00','09:00','10:00','12:00','13:00','14:00','15:00','16:00','17:00']:['09:00','10:30','12:00','14:30','16:00']; times.forEach(t=>{const opt=document.createElement('option');opt.value=t;opt.text=t;if(t===line.recommendTime)opt.selected=true;timeSelect.appendChild(opt);}); document.getElementById('totalPriceDisplay').innerText='¥'+line.price; document.getElementById('travelDate').valueAsDate=new Date(); document.querySelector('input[name="tripType"][value="去程"]').checked=true; updatePrice(); document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('bookingFormPage').classList.add('active'); showToast('已预填信息','请确认行程'); } }
+  function openBooking(lineId) { if(!getUserInfo()){ showToast('提示','请先登录，点击右上角菜单栏'); return; } const line = shuttleLines.find(l=>l.id===lineId); if(line){ currentBookingLine=line; currentLinePrice=line.price; document.getElementById('departure').value=line.from; document.getElementById('destination').value=line.to; const timeSelect=document.getElementById('travelTime'); timeSelect.innerHTML=''; const times=line.id==='2'?['07:00','08:00','09:00','10:00','12:00','13:00','14:00','15:00','16:00','17:00']:['09:00','10:30','12:00','14:30','16:00']; times.forEach(t=>{const opt=document.createElement('option');opt.value=t;opt.text=t;if(t===line.recommendTime)opt.selected=true;timeSelect.appendChild(opt);}); document.getElementById('totalPriceDisplay').innerText='¥'+line.price; document.getElementById('travelDate').valueAsDate=new Date(); document.querySelector('input[name="tripType"][value="去程"]').checked=true; updatePrice(); document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('bookingFormPage').classList.add('active'); showToast('已预填信息','请确认行程'); } }
   function updatePrice(){ const type=document.querySelector('input[name="tripType"]:checked').value; const total=type==='往返'?currentLinePrice*2:currentLinePrice; document.getElementById('totalPriceDisplay').innerText='¥'+total; }
   function submitBooking(){ const phone=document.getElementById('phoneNumber').value; if(!phone){ showToast('提示','请填写手机号'); return; } const bookings=getMyBookings(); const newBooking={ id:'b'+Date.now(), departure:document.getElementById('departure').value, destination:document.getElementById('destination').value, passengerCount:document.getElementById('passengerCount').value, phone:phone, date:document.getElementById('travelDate').value, time:document.getElementById('travelTime').value, tripType:document.querySelector('input[name="tripType"]:checked').value, price:currentLinePrice, status:'confirmed' }; bookings.push(newBooking); setMyBookings(bookings); showToast('预约成功','您的接驳车已预订'); setTimeout(()=>backToShuttle(),1500); }
   function backToShuttle(){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('shuttlePage').classList.add('active'); }
-  function goToThemeDetail(theme){ currentTheme=theme; document.getElementById('themeDetailTitle').innerText=theme+'主题·'+themeData[theme].name; document.getElementById('themeDetailContent').innerHTML=`<div style="background:url('${themeBgImg[theme]}') center/cover; height:160px; border-radius:16px;"></div><h4 style="margin:16px 0 8px;">${themeData[theme].name}</h4><p>${themeData[theme].desc}。青年热门打卡地，扫码集章赢好礼！</p><button class="btn-green" style="margin-top:12px;" onclick="speakText()">🔊 语音介绍</button>`; document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('themeDetailPage').classList.add('active'); }
+  function goToThemeDetail(theme){ 
+    const externalLinks = {
+      '水': 'https://v.xiumius.cn/board/v5/6ikJQ/695101950',
+      '林': 'https://v.xiumius.cn/board/v5/6ikJQ/695343728',
+      '日': 'https://v.xiumius.cn/board/v5/6ikJQ/695366457',
+      '云': 'https://v.xiumius.cn/board/v5/6ikJQ/692903739'
+    };
+    if (externalLinks[theme]) {
+      // 记录状态，这样浏览器后退时不会再显示启动动画
+      sessionStorage.setItem('visitedExternalTheme', 'true');
+      window.location.href = externalLinks[theme];
+    }
+  }
   function backToHome(){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('homePage').classList.add('active'); setTimeout(updateThemeHeroState, 60); }
   function speakText(){ const t=document.querySelector('#themeDetailContent p')?.innerText; if(t&&window.speechSynthesis) speechSynthesis.speak(new SpeechSynthesisUtterance(t)); else showToast('提示','语音暂不支持'); }
   function openCameraScanForTheme(){ window.location.href = themeUrlMap[currentTheme]; }
@@ -1444,7 +1457,7 @@
   function hideToast(){ document.getElementById('globalPopup').classList.remove('show'); }
   
   // 论坛相关（保持原逻辑）
-  function loadPosts(){ const saved=localStorage.getItem('miyun_posts'); if(saved) posts=JSON.parse(saved); else posts=[{id:'p1',author:'旅行青年',time:'2小时前',text:'邑仕山庄的湖景超美！',image:null,likes:24,comments:[],likedBy:[]},{id:'p2',author:'森林探险家',time:'昨天',text:'云蒙山森林徒步，空气超棒！',image:null,likes:18,comments:[],likedBy:[]}]; posts.forEach(p=>{if(!p.likedBy)p.likedBy=[];}); savePosts(); renderPosts(); }
+  function loadPosts(){ const saved=localStorage.getItem('miyun_posts'); if(saved) posts=JSON.parse(saved); else posts=[{id:'p1',author:'旅行青年',time:'2小时前',text:'邑仕庄园的湖景超美！',image:null,likes:24,comments:[],likedBy:[]},{id:'p2',author:'森林探险家',time:'昨天',text:'云蒙山森林徒步，空气超棒！',image:null,likes:18,comments:[],likedBy:[]}]; posts.forEach(p=>{if(!p.likedBy)p.likedBy=[];}); savePosts(); renderPosts(); }
   function savePosts(){ localStorage.setItem('miyun_posts',JSON.stringify(posts)); }
   function renderPosts(){ const container=document.getElementById('postList'); if(!container) return; container.innerHTML=posts.map(p=>{const isLiked=p.likedBy.includes(currentUserId); return `<div class="post-card" onclick="viewPostDetail('${p.id}')"><div><strong>${p.author}</strong> <span style="font-size:12px;">${p.time}</span></div><p style="margin:10px 0;">${p.text}</p>${p.image?`<img src="${p.image}" style="width:100%;border-radius:12px;">`:''}<div class="flex"><span onclick="event.stopPropagation();toggleLike('${p.id}')" style="color:${isLiked?'#ef4444':''}">❤️ ${p.likes}</span><span>💬 ${p.comments.length}</span></div></div>`;}).join(''); }
   window.toggleLike=function(id){ const p=posts.find(p=>p.id===id); if(p){ const idx=p.likedBy.indexOf(currentUserId); if(idx===-1){ p.likedBy.push(currentUserId); p.likes++; } else { p.likedBy.splice(idx,1); p.likes--; } savePosts(); renderPosts(); if(currentPostId===id) renderPostDetail(id); } };
@@ -1467,12 +1480,12 @@
   function toggleMenu(){ const modal=document.getElementById('menuModal'); modal.style.display=modal.style.display==='flex'?'none':'flex'; updateMenuDisplay(); }
   function closeMenu(){ document.getElementById('menuModal').style.display='none'; }
   function updateMenuDisplay(){ const user=getUserInfo(); if(user){ document.getElementById('menuUserName').innerText=user.name||'用户'; document.getElementById('menuUserPhone').innerText=user.phone?'手机: '+user.phone:''; }else{ document.getElementById('menuUserName').innerText='游客用户'; document.getElementById('menuUserPhone').innerText='点击登录'; } updateStampUI(); renderStampPageIfActive(); }
-  function openMyBookings(){ if(!getUserInfo()){ closeMenu(); openLoginModal(); showToast('提示','请先登录'); return; } const modal=document.getElementById('myBookingsModal'); modal.style.display='flex'; renderMyBookings(); }
+  function openMyBookings(){ if(!getUserInfo()){ closeMenu(); openLoginModal(); showToast('提示','请先登录，点击右上角菜单栏'); return; } const modal=document.getElementById('myBookingsModal'); modal.style.display='flex'; renderMyBookings(); }
   function closeMyBookings(){ document.getElementById('myBookingsModal').style.display='none'; }
   function renderMyBookings(){ const bookings=getMyBookings(); const list=document.getElementById('myBookingsList'); if(bookings.length===0){ list.innerHTML='<p style="text-align:center; color:#64748b; padding:20px;">暂无预约记录</p>'; return; } list.innerHTML=bookings.map(b=>`<div class="booking-card"><div class="booking-card-header"><span class="booking-card-route">${b.departure} → ${b.destination}</span><span class="booking-card-status ${b.status}">${b.status==='confirmed'?'已确认':(b.status==='pending'?'待支付':'已取消')}</span></div><div class="booking-card-info">📅 ${b.date} ${b.time}</div><div class="booking-card-info">👥 ${b.passengerCount}人 | 💰 ¥${b.price}</div><div class="booking-card-actions"><button class="btn-cancel" onclick="cancelBooking('${b.id}')">取消预约</button><button class="btn-modify" onclick="modifyBooking('${b.id}')">修改</button></div></div>`).join(''); }
   function cancelBooking(id){ if(confirm('确定要取消这个预约吗？')){ let bookings=getMyBookings(); const b=bookings.find(b=>b.id===id); if(b){ b.status='cancelled'; setMyBookings(bookings); renderMyBookings(); showToast('已取消','预约已取消'); } } }
   function modifyBooking(id){ closeMyBookings(); let bookings=getMyBookings(); const b=bookings.find(b=>b.id===id); if(b){ const line=shuttleLines.find(l=>l.from===b.departure&&l.to===b.destination); if(line){ currentBookingLine=line; currentLinePrice=line.price; document.getElementById('departure').value=b.departure; document.getElementById('destination').value=b.destination; document.getElementById('passengerCount').value=b.passengerCount; document.getElementById('phoneNumber').value=b.phone; document.getElementById('travelDate').value=b.date; const timeSelect=document.getElementById('travelTime'); timeSelect.innerHTML=''; const times=line.id==='2'?['07:00','08:00','09:00','10:00','12:00','13:00','14:00','15:00','16:00','17:00']:['09:00','10:30','12:00','14:30','16:00']; times.forEach(t=>{const opt=document.createElement('option');opt.value=t;opt.text=t;if(t===b.time)opt.selected=true;timeSelect.appendChild(opt);}); document.querySelectorAll('input[name="tripType"]').forEach(r=>r.checked=r.value===b.tripType); updatePrice(); navigateTo('bookingFormPage'); } } }
-  function openMyProfile(){ if(!getUserInfo()){ closeMenu(); openLoginModal(); showToast('提示','请先登录'); return; } const modal=document.getElementById('profileModal'); modal.style.display='flex'; const user=getUserInfo(); document.getElementById('profileName').value=user.name||''; document.getElementById('profilePhone').value=user.phone||''; document.getElementById('profileIdCard').value=user.idCard||''; document.getElementById('profileEmail').value=user.email||''; }
+  function openMyProfile(){ if(!getUserInfo()){ closeMenu(); openLoginModal(); showToast('提示','请先登录，点击右上角菜单栏'); return; } const modal=document.getElementById('profileModal'); modal.style.display='flex'; const user=getUserInfo(); document.getElementById('profileName').value=user.name||''; document.getElementById('profilePhone').value=user.phone||''; document.getElementById('profileIdCard').value=user.idCard||''; document.getElementById('profileEmail').value=user.email||''; }
   function closeMyProfile(){ document.getElementById('profileModal').style.display='none'; }
   function saveProfile(){ const user=getUserInfo()||{}; user.name=document.getElementById('profileName').value; user.phone=document.getElementById('profilePhone').value; user.idCard=document.getElementById('profileIdCard').value; user.email=document.getElementById('profileEmail').value; setUserInfo(user); closeMyProfile(); showToast('保存成功','个人信息已更新'); }
   function logout(){ if(confirm('确定要退出登录吗？')){ localStorage.removeItem('miyun_user'); currentUser=null; closeMenu(); showToast('已退出','已退出登录'); updateMenuDisplay(); } }
@@ -1482,13 +1495,19 @@
   function doLogin(){ const phone=document.getElementById('loginPhone').value; const code=document.getElementById('loginCode').value; if(!phone||phone.length!==11){ showToast('提示','请输入正确的手机号'); return; } if(!code||code.length!==6){ showToast('提示','请输入6位验证码'); return; } const user={name:'用户',phone:phone,idCard:'',email:''}; setUserInfo(user); currentUser=user; closeLoginModal(); updateMenuDisplay(); showToast('登录成功','欢迎回来！'); }
   
   // 导航
-  document.querySelectorAll('.nav-item').forEach(btn=>{ btn.addEventListener('click',()=>{ const pageId=btn.dataset.page; if((pageId==='shuttlePage'||pageId==='stampPage'||pageId==='forumPage')&&!getUserInfo()){ showToast('提示','请先登录'); return; } document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(pageId==='forumPage') renderPosts(); if(pageId==='stampPage') renderStampPage();  }); });
+  document.querySelectorAll('.nav-item').forEach(btn=>{ btn.addEventListener('click',()=>{ const pageId=btn.dataset.page; if((pageId==='shuttlePage'||pageId==='stampPage'||pageId==='forumPage')&&!getUserInfo()){ showToast('提示','请先登录，点击右上角菜单栏'); return; } document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active'); document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(pageId==='forumPage') renderPosts(); if(pageId==='stampPage') renderStampPage();  }); });
   
   // 初始化
   const savedStamps = localStorage.getItem('miyun_stamps');
   // 读取保存的值，默认值为2
   stampCount = savedStamps ? parseInt(savedStamps) : 2;
   renderStampIcons(); renderThemeHeroList(); renderStartupIntro(); renderShuttles(); loadPosts(); updateStampUI(); renderStampPage();
+
+  // 检查是否从外部链接跳转回来
+  if (sessionStorage.getItem('visitedExternalTheme')) {
+    finishStartupIntro();
+    sessionStorage.removeItem('visitedExternalTheme');
+  }
 
   // 检查是否从扫码页面返回
   const returnedFromScan = sessionStorage.getItem('returnedFromScan');
@@ -1498,8 +1517,14 @@
     stampCount = newStamps ? parseInt(newStamps) : 2;
     updateStampUI();
     renderStampPage();
-    if (stampCount > 2) {
-      setTimeout(() => showToast('欢迎回来', '您的徽章已解锁！'), 500);
+    
+    // 如果刚刚有解锁的徽章，则弹窗庆祝
+    const unlockedTheme = sessionStorage.getItem('justUnlockedTheme');
+    if (unlockedTheme) {
+      sessionStorage.removeItem('justUnlockedTheme');
+      setTimeout(() => showStampPopup(unlockedTheme), 500);
+    } else {
+      setTimeout(() => showToast('欢迎回来', '打卡成功！'), 500);
     }
   }
 
